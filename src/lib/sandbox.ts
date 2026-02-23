@@ -214,7 +214,7 @@ export async function executeInIframe(
 					console: messages,
 				});
 			}
-		}, 8000);
+		}, 30000);
 
 		function handleMessage(event: MessageEvent) {
 			if (event.data?.type === "console") {
@@ -273,7 +273,7 @@ export async function executeInIframe(
                 await (async function() {
                   ${code}
                 })();
-                await new Promise(r => setTimeout(r, 1000));
+                await new Promise(r => setTimeout(r, 5000));
                 window.parent.postMessage({
                   type: 'result',
                   payload: undefined
