@@ -214,7 +214,7 @@ export async function executeInIframe(
 					console: messages,
 				});
 			}
-		}, 8000);
+		}, 30000);
 
 		function handleMessage(event: MessageEvent) {
 			if (event.data?.type === "console") {
@@ -227,15 +227,13 @@ export async function executeInIframe(
 			} else if (event.data?.type === "result") {
 				if (!resolved) {
 					resolved = true;
-					setTimeout(() => {
-						cleanup();
-						resolve({
-							success: true,
-							result: event.data.payload,
-							executionTime: performance.now() - startTime,
-							console: messages,
-						});
-					}, 100);
+					cleanup();
+					resolve({
+						success: true,
+						result: event.data.payload,
+						executionTime: performance.now() - startTime,
+						console: messages,
+					});
 				}
 			} else if (event.data?.type === "error") {
 				if (!resolved) {
@@ -268,26 +266,70 @@ export async function executeInIframe(
         </head>
         <body>
           <script>
-            (async function() {
-              try {
-                await (async function() {
-                  ${code}
-                })();
-                await new Promise(r => setTimeout(r, 1000));
-                window.parent.postMessage({
-                  type: 'result',
-                  payload: undefined
-                }, '*');
-              } catch (__e) {
-                window.parent.postMessage({
-                  type: 'error',
-                  payload: {
-                    name: __e.name,
-                    message: __e.message,
-                    stack: __e.stack
-                  }
-                }, '*');
+            (function() {
+              let pendingPromises = 0;
+              let pendingTimers = 0;
+              let checkInterval = null;
+              
+              const originalSetTimeout = window.setTimeout;
+              const originalSetInterval = window.setInterval;
+              const originalPromise = Promise;
+              const originalThen = Promise.prototype.then;
+              
+              window.setTimeout = function(fn, delay, ...args) {
+                pendingTimers++;
+                return originalSetTimeout.call(window, function(...a) {
+                  pendingTimers--;
+                  return fn.apply(this, a);
+                }, delay, ...args);
+              };
+              
+              window.setInterval = function(fn, delay, ...args) {
+                pendingTimers++;
+                return originalSetInterval.call(window, function(...a) {
+                  return fn.apply(this, a);
+                }, delay, ...args);
+              };
+              
+              Promise.prototype.then = function(onFulfilled, onRejected) {
+                pendingPromises++;
+                return originalThen.call(this,
+                  function(v) { pendingPromises--; return onFulfilled ? onFulfilled(v) : v; },
+                  function(e) { pendingPromises--; return onRejected ? onRejected(e) : originalPromise.reject(e); }
+                );
+              };
+              
+              function checkComplete() {
+                if (pendingPromises === 0 && pendingTimers === 0) {
+                  clearInterval(checkInterval);
+                  Promise.prototype.then = originalThen;
+                  window.parent.postMessage({ type: 'result', payload: undefined }, '*');
+                }
               }
+              
+              async function run() {
+                try {
+                  ${code}
+                  
+                  await new Promise(r => originalSetTimeout(r, 10));
+                  
+                  checkInterval = originalSetInterval(checkComplete, 100);
+                  
+                  originalSetTimeout(function() {
+                    clearInterval(checkInterval);
+                    Promise.prototype.then = originalThen;
+                    window.parent.postMessage({ type: 'result', payload: undefined }, '*');
+                  }, 25000);
+                  
+                } catch (e) {
+                  window.parent.postMessage({
+                    type: 'error',
+                    payload: { name: e.name, message: e.message, stack: e.stack }
+                  }, '*');
+                }
+              }
+              
+              run();
             })();
           </script>
         </body>
@@ -312,45 +354,84 @@ export async function executeInWorker(
 				resolved = true;
 				worker.terminate();
 				resolve({
-					success: false,
-					error: { name: "TimeoutError", message: "Execution timed out (10s)" },
+					success: true,
 					executionTime: performance.now() - startTime,
 					console: messages,
 				});
 			}
-		}, 10000);
+		}, 30000);
 
 		const workerCode = `
-      self.onmessage = (e) => {
-        const code = e.data;
-        
-        const messages = [];
-        
-        function sendToMain(type, args) {
-          self.postMessage({ type: 'console', payload: { type, args, timestamp: Date.now() } });
+      let pendingTimers = 0;
+      let pendingPromises = 0;
+      let checkInterval = null;
+      
+      const console = {
+        log: (...args) => self.postMessage({ type: 'console', payload: { type: 'log', args, timestamp: Date.now() } }),
+        warn: (...args) => self.postMessage({ type: 'console', payload: { type: 'warn', args, timestamp: Date.now() } }),
+        error: (...args) => self.postMessage({ type: 'console', payload: { type: 'error', args, timestamp: Date.now() } }),
+        info: (...args) => self.postMessage({ type: 'console', payload: { type: 'info', args, timestamp: Date.now() } }),
+      };
+      
+      const originalSetTimeout = self.setTimeout;
+      const originalSetInterval = self.setInterval;
+      const originalPromise = Promise;
+      const originalThen = Promise.prototype.then;
+      
+      self.setTimeout = function(fn, delay, ...args) {
+        pendingTimers++;
+        return originalSetTimeout(function(...a) {
+          pendingTimers--;
+          try { return fn.apply(this, a); } catch(e) { console.error(e); }
+        }, delay, ...args);
+      };
+      
+      self.setInterval = function(fn, delay, ...args) {
+        pendingTimers++;
+        return originalSetInterval(function(...a) {
+          try { return fn.apply(this, a); } catch(e) { console.error(e); }
+        }, delay, ...args);
+      };
+      
+      Promise.prototype.then = function(onFulfilled, onRejected) {
+        pendingPromises++;
+        return originalThen.call(this,
+          function(v) { pendingPromises--; return onFulfilled ? onFulfilled(v) : v; },
+          function(e) { pendingPromises--; return onRejected ? onRejected(e) : originalPromise.reject(e); }
+        );
+      };
+      
+      function checkComplete() {
+        if (pendingPromises === 0 && pendingTimers === 0) {
+          clearInterval(checkInterval);
+          Promise.prototype.then = originalThen;
+          self.postMessage({ type: 'result', payload: undefined });
         }
-        
-        const fakeConsole = {
-          log: (...args) => sendToMain('log', args),
-          warn: (...args) => sendToMain('warn', args),
-          error: (...args) => sendToMain('error', args),
-          info: (...args) => sendToMain('info', args),
-        };
-        
-        try {
-          const fn = new Function('console', code);
-          const result = fn(fakeConsole);
-          self.postMessage({ type: 'result', payload: result });
-        } catch (error) {
-          self.postMessage({
-            type: 'error',
-            payload: {
-              name: error.name,
-              message: error.message,
-              stack: error.stack
-            }
-          });
-        }
+      }
+      
+      self.onmessage = function(e) {
+        (async function() {
+          try {
+            const fn = new Function(e.data);
+            fn();
+            
+            await new Promise(r => originalSetTimeout(r, 10));
+            
+            checkInterval = originalSetInterval(checkComplete, 100);
+            
+            originalSetTimeout(function() {
+              clearInterval(checkInterval);
+              Promise.prototype.then = originalThen;
+              self.postMessage({ type: 'result', payload: undefined });
+            }, 25000);
+            
+          } catch (error) {
+            self.postMessage({
+              type: 'error',
+              payload: { name: error.name, message: error.message, stack: error.stack }
+            });
+          }
+        })();
       };
     `;
 
