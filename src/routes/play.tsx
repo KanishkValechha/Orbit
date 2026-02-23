@@ -1,10 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Download, RotateCcw, Share2, Upload } from "lucide-react";
+import { Download, RotateCcw } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import { CodeEditor, ThemeToggle, useThemeState } from "#components/editor";
-import { OutputPanel } from "#components/output";
-import { Panel } from "#components/ui";
-import { type ThemeName, themeInfo } from "#lib/themes";
+import { CodeEditor, ThemeToggle, useThemeState } from "../components/editor";
+import { OutputPanel } from "../components/output";
+import { Panel } from "../components/ui";
+import { type ThemeName, themeInfo } from "../lib/themes";
 
 const DEFAULT_CODE = `// Welcome to Orbit Playground! 🚀
 // Write JavaScript or TypeScript code and hit Run

@@ -1,10 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Copy, Download, ExternalLink, RotateCcw, Share2 } from "lucide-react";
+import { Copy, Download, Share2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import { CodeEditor, ThemeToggle, useThemeState } from "#components/editor";
-import { OutputPanel } from "#components/output";
-import { Badge, Panel } from "#components/ui";
-import { type ThemeName, themeInfo } from "#lib/themes";
+import { CodeEditor, ThemeToggle, useThemeState } from "../components/editor";
+import { OutputPanel } from "../components/output";
+import { Badge, Panel } from "../components/ui";
+import { type ThemeName, themeInfo } from "../lib/themes";
 
 const DEFAULT_CODE = `// Shared snippet
 console.log('Hello from shared snippet!')

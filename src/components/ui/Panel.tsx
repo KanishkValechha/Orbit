@@ -1,5 +1,5 @@
 import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "#lib/utils";
+import { cn } from "../../lib/utils";
 
 const panelVariants = cva(
 	"rounded-xl border backdrop-blur-xl transition-all duration-300",

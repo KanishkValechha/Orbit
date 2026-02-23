@@ -1,8 +1,8 @@
 import Editor, { type BeforeMount, type OnMount } from "@monaco-editor/react";
 import type * as Monaco from "monaco-editor";
 import { forwardRef, useCallback, useEffect, useRef } from "react";
-import { registerMonacoThemes, type ThemeName } from "#lib/themes";
-import { cn } from "#lib/utils";
+import { registerMonacoThemes, type ThemeName } from "../../lib/themes";
+import { cn } from "../../lib/utils";
 
 interface CodeEditorProps {
 	value: string;

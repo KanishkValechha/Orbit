@@ -1,12 +1,12 @@
-import { Code, Layout, Play, Trash2 } from "lucide-react";
+import { Code, Layout, Play } from "lucide-react";
 import { useCallback, useState } from "react";
-import { Button, Panel, PanelHeader, PanelTitle } from "#components/ui";
 import {
 	type ConsoleMessage,
 	type ExecutionMode,
 	executeCode,
-} from "#lib/sandbox";
-import { cn } from "#lib/utils";
+} from "../../lib/sandbox";
+import { cn } from "../../lib/utils";
+import { Button, Panel, PanelHeader, PanelTitle } from "../ui";
 import { ConsoleHeader, ConsoleOutput } from "./ConsoleOutput";
 import { PreviewFrame } from "./PreviewFrame";
 

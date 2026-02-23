@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { cn } from "#lib/utils";
+import { cn } from "../../lib/utils";
 
 interface PreviewFrameProps {
 	code: string;
@@ -38,8 +38,6 @@ export function PreviewFrame({
   <div id="root"></div>
   <script>
     (function() {
-      const __messages = [];
-      
       function sendToParent(type, args) {
         const serializedArgs = args.map(arg => {
           if (arg === null) return 'null';
@@ -114,7 +112,7 @@ export function PreviewFrame({
 			const html = generatePreviewHtml(code);
 			iframeRef.current.srcdoc = html;
 		}
-	}, [code, generatePreviewHtml, key]);
+	}, [code, generatePreviewHtml]);
 
 	const refresh = useCallback(() => {
 		setKey((k) => k + 1);
@@ -134,6 +132,7 @@ export function PreviewFrame({
 				onClick={refresh}
 				className="absolute top-2 right-2 p-1.5 rounded bg-black/50 hover:bg-black/70 text-gray-400 hover:text-white transition-colors"
 				title="Refresh preview"
+				aria-label="Refresh preview"
 			>
 				<svg
 					className="w-4 h-4"

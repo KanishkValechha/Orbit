@@ -1,4 +1,4 @@
-import { cn } from "#lib/utils";
+import { cn } from "../../lib/utils";
 
 interface FileTab {
 	id: string;
@@ -39,6 +39,9 @@ export function FileTabs({
 					<span>{tab.name}</span>
 					{tabs.length > 1 && onTabClose && (
 						<span
+							role="button"
+							tabIndex={0}
+							onKeyDown={(e) => e.key === "Enter" && onTabClose(tab.id)}
 							onClick={(e) => {
 								e.stopPropagation();
 								onTabClose(tab.id);
@@ -48,6 +51,7 @@ export function FileTabs({
 								"opacity-0 group-hover:opacity-100",
 								"hover:bg-white/10",
 							)}
+							aria-label={`Close ${tab.name}`}
 						>
 							<svg
 								className="w-3 h-3"

@@ -1,7 +1,7 @@
 import { AlertCircle, AlertTriangle, Info, Terminal } from "lucide-react";
-import { Badge } from "#components/ui";
-import type { ConsoleMessage } from "#lib/sandbox";
-import { cn } from "#lib/utils";
+import type { ConsoleMessage } from "../../lib/sandbox";
+import { cn } from "../../lib/utils";
+import { Badge } from "../ui";
 
 interface ConsoleOutputProps {
 	messages: ConsoleMessage[];
@@ -115,8 +115,8 @@ export function ConsoleOutput({ messages, className }: ConsoleOutputProps) {
 							<div
 								className={cn("whitespace-pre-wrap break-all", config.color)}
 							>
-								{msg.args.map((arg, i) => (
-									<span key={i}>
+								{msg.args.map((arg: unknown, i: number) => (
+									<span key={`${msg.id}-${i}`}>
 										{i > 0 && " "}
 										{formatValue(arg)}
 									</span>

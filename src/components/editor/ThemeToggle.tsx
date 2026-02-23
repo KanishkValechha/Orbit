@@ -1,7 +1,11 @@
 import { Palette } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Select } from "#components/ui";
-import { registerMonacoThemes, type ThemeName, themeInfo } from "#lib/themes";
+import {
+	registerMonacoThemes,
+	type ThemeName,
+	themeInfo,
+} from "../../lib/themes";
+import { Select } from "../ui";
 
 interface ThemeToggleProps {
 	value: ThemeName;
@@ -19,7 +23,9 @@ export function ThemeToggle({ value, onChange }: ThemeToggleProps) {
 			<Palette className="w-4 h-4 text-gray-400" />
 			<Select
 				value={value}
-				onChange={(e) => onChange(e.target.value as ThemeName)}
+				onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+					onChange(e.target.value as ThemeName)
+				}
 				options={themeOptions}
 				variant="ghost"
 				size="sm"
