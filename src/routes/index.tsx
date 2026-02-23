@@ -1,118 +1,163 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from "@tanstack/react-router";
 import {
-  Zap,
-  Server,
-  Route as RouteIcon,
-  Shield,
-  Waves,
-  Sparkles,
-} from 'lucide-react'
+	ArrowRight,
+	Code2,
+	Palette,
+	Share2,
+	Sparkles,
+	Zap,
+} from "lucide-react";
 
-export const Route = createFileRoute('/')({ component: App })
+export const Route = createFileRoute("/")({ component: LandingPage });
 
-function App() {
-  const features = [
-    {
-      icon: <Zap className="w-12 h-12 text-cyan-400" />,
-      title: 'Powerful Server Functions',
-      description:
-        'Write server-side code that seamlessly integrates with your client components. Type-safe, secure, and simple.',
-    },
-    {
-      icon: <Server className="w-12 h-12 text-cyan-400" />,
-      title: 'Flexible Server Side Rendering',
-      description:
-        'Full-document SSR, streaming, and progressive enhancement out of the box. Control exactly what renders where.',
-    },
-    {
-      icon: <RouteIcon className="w-12 h-12 text-cyan-400" />,
-      title: 'API Routes',
-      description:
-        'Build type-safe API endpoints alongside your application. No separate backend needed.',
-    },
-    {
-      icon: <Shield className="w-12 h-12 text-cyan-400" />,
-      title: 'Strongly Typed Everything',
-      description:
-        'End-to-end type safety from server to client. Catch errors before they reach production.',
-    },
-    {
-      icon: <Waves className="w-12 h-12 text-cyan-400" />,
-      title: 'Full Streaming Support',
-      description:
-        'Stream data from server to client progressively. Perfect for AI applications and real-time updates.',
-    },
-    {
-      icon: <Sparkles className="w-12 h-12 text-cyan-400" />,
-      title: 'Next Generation Ready',
-      description:
-        'Built from the ground up for modern web applications. Deploy anywhere JavaScript runs.',
-    },
-  ]
+function LandingPage() {
+	const features = [
+		{
+			icon: <Code2 className="w-6 h-6 text-cyan-400" />,
+			title: "Monaco Editor",
+			description:
+				"Full TypeScript & JavaScript support with IntelliSense, error highlighting, and auto-completion.",
+		},
+		{
+			icon: <Palette className="w-6 h-6 text-purple-400" />,
+			title: "8 Premium Themes",
+			description:
+				"VS Code, Vercel, GitHub, Monokai Pro, and Dracula themes. Light and dark modes included.",
+		},
+		{
+			icon: <Zap className="w-6 h-6 text-amber-400" />,
+			title: "Instant Execution",
+			description:
+				"Run code in a sandboxed iframe or Web Worker. See results in real-time.",
+		},
+		{
+			icon: <Share2 className="w-6 h-6 text-emerald-400" />,
+			title: "Share Snippets",
+			description:
+				"Save and share your code snippets with a unique URL. Fork and remix others' work.",
+		},
+	];
 
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
-      <section className="relative py-20 px-6 text-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-purple-500/10"></div>
-        <div className="relative max-w-5xl mx-auto">
-          <div className="flex items-center justify-center gap-6 mb-6">
-            <img
-              src="/tanstack-circle-logo.png"
-              alt="TanStack Logo"
-              className="w-24 h-24 md:w-32 md:h-32"
-            />
-            <h1 className="text-6xl md:text-7xl font-black text-white [letter-spacing:-0.08em]">
-              <span className="text-gray-300">TANSTACK</span>{' '}
-              <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-                START
-              </span>
-            </h1>
-          </div>
-          <p className="text-2xl md:text-3xl text-gray-300 mb-4 font-light">
-            The framework for next generation AI applications
-          </p>
-          <p className="text-lg text-gray-400 max-w-3xl mx-auto mb-8">
-            Full-stack framework powered by TanStack Router for React and Solid.
-            Build modern applications with server functions, streaming, and type
-            safety.
-          </p>
-          <div className="flex flex-col items-center gap-4">
-            <a
-              href="https://tanstack.com/start"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-8 py-3 bg-cyan-500 hover:bg-cyan-600 text-white font-semibold rounded-lg transition-colors shadow-lg shadow-cyan-500/50"
-            >
-              Documentation
-            </a>
-            <p className="text-gray-400 text-sm mt-2">
-              Begin your TanStack Start journey by editing{' '}
-              <code className="px-2 py-1 bg-slate-700 rounded text-cyan-400">
-                /src/routes/index.tsx
-              </code>
-            </p>
-          </div>
-        </div>
-      </section>
+	return (
+		<div className="min-h-screen bg-black text-white">
+			<div className="absolute inset-0 overflow-hidden pointer-events-none">
+				<div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl" />
+				<div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl" />
+				<div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-500/10 rounded-full blur-3xl" />
+			</div>
 
-      <section className="py-16 px-6 max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {features.map((feature, index) => (
-            <div
-              key={index}
-              className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6 hover:border-cyan-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10"
-            >
-              <div className="mb-4">{feature.icon}</div>
-              <h3 className="text-xl font-semibold text-white mb-3">
-                {feature.title}
-              </h3>
-              <p className="text-gray-400 leading-relaxed">
-                {feature.description}
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
-    </div>
-  )
+			<section className="relative py-24 px-6">
+				<div className="max-w-4xl mx-auto text-center">
+					<div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-sm text-gray-400 mb-8">
+						<Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+						<span>Built with TanStack Start</span>
+					</div>
+
+					<h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-6">
+						<span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
+							Orbit
+						</span>
+						<br />
+						<span className="text-gray-300 text-3xl sm:text-4xl lg:text-5xl font-medium">
+							JavaScript Playground
+						</span>
+					</h1>
+
+					<p className="text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto mb-10">
+						Write, run, and share JavaScript & TypeScript code in a beautiful,
+						modern editor. No setup required.
+					</p>
+
+					<div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+						<Link
+							to="/play"
+							className="group flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-medium rounded-lg shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all hover:scale-[1.02] active:scale-[0.98]"
+						>
+							Open Playground
+							<ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+						</Link>
+						<a
+							href="https://github.com"
+							target="_blank"
+							rel="noopener noreferrer"
+							className="flex items-center gap-2 px-6 py-3 bg-white/5 border border-white/10 text-gray-300 font-medium rounded-lg hover:bg-white/10 hover:border-white/20 transition-all"
+						>
+							View on GitHub
+						</a>
+					</div>
+				</div>
+			</section>
+
+			<section className="relative py-16 px-6">
+				<div className="max-w-5xl mx-auto">
+					<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+						{features.map((feature) => (
+							<div
+								key={feature.title}
+								className="group p-6 rounded-xl bg-white/[0.02] border border-white/5 hover:border-white/10 hover:bg-white/[0.04] transition-all duration-300"
+							>
+								<div className="flex items-start gap-4">
+									<div className="p-2 rounded-lg bg-white/5">
+										{feature.icon}
+									</div>
+									<div>
+										<h3 className="text-lg font-semibold text-white mb-1">
+											{feature.title}
+										</h3>
+										<p className="text-gray-400 text-sm leading-relaxed">
+											{feature.description}
+										</p>
+									</div>
+								</div>
+							</div>
+						))}
+					</div>
+				</div>
+			</section>
+
+			<section className="relative py-16 px-6">
+				<div className="max-w-3xl mx-auto">
+					<div className="rounded-2xl border border-white/5 bg-gradient-to-b from-white/[0.03] to-transparent overflow-hidden">
+						<div className="flex items-center gap-2 px-4 py-3 border-b border-white/5 bg-white/[0.02]">
+							<div className="flex gap-1.5">
+								<div className="w-3 h-3 rounded-full bg-red-500/80" />
+								<div className="w-3 h-3 rounded-full bg-amber-500/80" />
+								<div className="w-3 h-3 rounded-full bg-emerald-500/80" />
+							</div>
+							<span className="text-xs text-gray-500 ml-2">playground.ts</span>
+						</div>
+						<pre className="p-4 text-sm font-mono overflow-x-auto">
+							<code className="text-gray-300">
+								<span className="text-purple-400">const</span>{" "}
+								<span className="text-cyan-400">greeting</span> ={" "}
+								<span className="text-amber-300">
+									&quot;Welcome to Orbit!&quot;
+								</span>
+								{"\n"}
+								<span className="text-purple-400">console</span>
+								<span className="text-gray-400">.</span>
+								<span className="text-emerald-400">log</span>(greeting)
+								{"\n\n"}
+								<span className="text-gray-500">{`// Start coding...`}</span>
+							</code>
+						</pre>
+					</div>
+				</div>
+			</section>
+
+			<footer className="relative py-8 px-6 border-t border-white/5">
+				<div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+					<p className="text-sm text-gray-500">
+						Built with TanStack Start & Monaco Editor
+					</p>
+					<Link
+						to="/play"
+						className="text-sm text-gray-400 hover:text-white transition-colors"
+					>
+						Start coding →
+					</Link>
+				</div>
+			</footer>
+		</div>
+	);
 }
