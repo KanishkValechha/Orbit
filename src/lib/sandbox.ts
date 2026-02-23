@@ -103,18 +103,19 @@ export function transpileTypeScript(code: string): string {
 }
 
 function createSandboxIframe(): HTMLIFrameElement {
-	let iframe = document.getElementById(IFRAME_ID) as HTMLIFrameElement | null;
-
-	if (!iframe) {
-		iframe = document.createElement("iframe");
-		iframe.id = IFRAME_ID;
-		iframe.style.display = "none";
-		iframe.style.width = "0";
-		iframe.style.height = "0";
-		iframe.style.border = "none";
-		iframe.setAttribute("sandbox", "allow-scripts");
-		document.body.appendChild(iframe);
+	const existing = document.getElementById(IFRAME_ID);
+	if (existing) {
+		existing.remove();
 	}
+
+	const iframe = document.createElement("iframe");
+	iframe.id = IFRAME_ID;
+	iframe.style.display = "none";
+	iframe.style.width = "0";
+	iframe.style.height = "0";
+	iframe.style.border = "none";
+	iframe.setAttribute("sandbox", "allow-scripts");
+	document.body.appendChild(iframe);
 
 	return iframe;
 }
@@ -213,7 +214,7 @@ export async function executeInIframe(
 					console: messages,
 				});
 			}
-		}, 10000);
+		}, 8000);
 
 		function handleMessage(event: MessageEvent) {
 			if (event.data?.type === "console") {
@@ -226,13 +227,15 @@ export async function executeInIframe(
 			} else if (event.data?.type === "result") {
 				if (!resolved) {
 					resolved = true;
-					cleanup();
-					resolve({
-						success: true,
-						result: event.data.payload,
-						executionTime: performance.now() - startTime,
-						console: messages,
-					});
+					setTimeout(() => {
+						cleanup();
+						resolve({
+							success: true,
+							result: event.data.payload,
+							executionTime: performance.now() - startTime,
+							console: messages,
+						});
+					}, 100);
 				}
 			} else if (event.data?.type === "error") {
 				if (!resolved) {
@@ -267,13 +270,13 @@ export async function executeInIframe(
           <script>
             (async function() {
               try {
-                const __result = await (async function() {
+                await (async function() {
                   ${code}
                 })();
-                await new Promise(r => setTimeout(r, 100));
+                await new Promise(r => setTimeout(r, 1000));
                 window.parent.postMessage({
                   type: 'result',
-                  payload: __result
+                  payload: undefined
                 }, '*');
               } catch (__e) {
                 window.parent.postMessage({
