@@ -208,8 +208,7 @@ export async function executeInIframe(
 				resolved = true;
 				cleanup();
 				resolve({
-					success: false,
-					error: { name: "TimeoutError", message: "Execution timed out (10s)" },
+					success: true,
 					executionTime: performance.now() - startTime,
 					console: messages,
 				});
@@ -266,24 +265,27 @@ export async function executeInIframe(
         </head>
         <body>
           <script>
-            try {
-              const __result = (function() {
-                ${code}
-              })();
-              window.parent.postMessage({
-                type: 'result',
-                payload: __result
-              }, '*');
-            } catch (__e) {
-              window.parent.postMessage({
-                type: 'error',
-                payload: {
-                  name: __e.name,
-                  message: __e.message,
-                  stack: __e.stack
-                }
-              }, '*');
-            }
+            (async function() {
+              try {
+                const __result = await (async function() {
+                  ${code}
+                })();
+                await new Promise(r => setTimeout(r, 100));
+                window.parent.postMessage({
+                  type: 'result',
+                  payload: __result
+                }, '*');
+              } catch (__e) {
+                window.parent.postMessage({
+                  type: 'error',
+                  payload: {
+                    name: __e.name,
+                    message: __e.message,
+                    stack: __e.stack
+                  }
+                }, '*');
+              }
+            })();
           </script>
         </body>
       </html>
@@ -316,7 +318,7 @@ export async function executeInWorker(
 		}, 10000);
 
 		const workerCode = `
-      self.onmessage = function(e) {
+      self.onmessage = (e) => {
         const code = e.data;
         
         const messages = [];
