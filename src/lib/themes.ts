@@ -1,0 +1,378 @@
+import type * as Monaco from "monaco-editor";
+
+export type ThemeName =
+	| "vscode-dark"
+	| "vscode-light"
+	| "vercel-dark"
+	| "vercel-light"
+	| "github-dark"
+	| "github-light"
+	| "monokai-pro"
+	| "dracula";
+
+export interface ThemeInfo {
+	name: ThemeName;
+	label: string;
+	isDark: boolean;
+	colors: {
+		bg: string;
+		bgSecondary: string;
+		bgTertiary: string;
+		border: string;
+		text: string;
+		textMuted: string;
+		accent: string;
+		accentHover: string;
+	};
+}
+
+export const themeInfo: Record<ThemeName, ThemeInfo> = {
+	"vscode-dark": {
+		name: "vscode-dark",
+		label: "VS Code Dark+",
+		isDark: true,
+		colors: {
+			bg: "#1e1e1e",
+			bgSecondary: "#252526",
+			bgTertiary: "#2d2d2d",
+			border: "#3c3c3c",
+			text: "#d4d4d4",
+			textMuted: "#808080",
+			accent: "#0078d4",
+			accentHover: "#1a8cff",
+		},
+	},
+	"vscode-light": {
+		name: "vscode-light",
+		label: "VS Code Light+",
+		isDark: false,
+		colors: {
+			bg: "#ffffff",
+			bgSecondary: "#f3f3f3",
+			bgTertiary: "#e8e8e8",
+			border: "#d4d4d4",
+			text: "#333333",
+			textMuted: "#6e6e6e",
+			accent: "#0078d4",
+			accentHover: "#0066b8",
+		},
+	},
+	"vercel-dark": {
+		name: "vercel-dark",
+		label: "Vercel Dark",
+		isDark: true,
+		colors: {
+			bg: "#000000",
+			bgSecondary: "#0a0a0a",
+			bgTertiary: "#111111",
+			border: "#1f1f1f",
+			text: "#fafafa",
+			textMuted: "#737373",
+			accent: "#ffffff",
+			accentHover: "#a3a3a3",
+		},
+	},
+	"vercel-light": {
+		name: "vercel-light",
+		label: "Vercel Light",
+		isDark: false,
+		colors: {
+			bg: "#ffffff",
+			bgSecondary: "#fafafa",
+			bgTertiary: "#f5f5f5",
+			border: "#e5e5e5",
+			text: "#171717",
+			textMuted: "#737373",
+			accent: "#171717",
+			accentHover: "#404040",
+		},
+	},
+	"github-dark": {
+		name: "github-dark",
+		label: "GitHub Dark",
+		isDark: true,
+		colors: {
+			bg: "#0d1117",
+			bgSecondary: "#161b22",
+			bgTertiary: "#21262d",
+			border: "#30363d",
+			text: "#e6edf3",
+			textMuted: "#7d8590",
+			accent: "#58a6ff",
+			accentHover: "#79b8ff",
+		},
+	},
+	"github-light": {
+		name: "github-light",
+		label: "GitHub Light",
+		isDark: false,
+		colors: {
+			bg: "#ffffff",
+			bgSecondary: "#f6f8fa",
+			bgTertiary: "#eaeef2",
+			border: "#d0d7de",
+			text: "#1f2328",
+			textMuted: "#656d76",
+			accent: "#0969da",
+			accentHover: "#0550ae",
+		},
+	},
+	"monokai-pro": {
+		name: "monokai-pro",
+		label: "Monokai Pro",
+		isDark: true,
+		colors: {
+			bg: "#2d2a2e",
+			bgSecondary: "#363437",
+			bgTertiary: "#403e41",
+			border: "#5b595c",
+			text: "#fcfcfa",
+			textMuted: "#939293",
+			accent: "#ffd866",
+			accentHover: "#ffcc00",
+		},
+	},
+	dracula: {
+		name: "dracula",
+		label: "Dracula",
+		isDark: true,
+		colors: {
+			bg: "#282a36",
+			bgSecondary: "#2d3039",
+			bgTertiary: "#343746",
+			border: "#44475a",
+			text: "#f8f8f2",
+			textMuted: "#6272a4",
+			accent: "#bd93f9",
+			accentHover: "#caa9fa",
+		},
+	},
+};
+
+export const monacoThemes: Record<
+	ThemeName,
+	Monaco.editor.IStandaloneThemeData
+> = {
+	"vscode-dark": {
+		base: "vs-dark",
+		inherit: true,
+		rules: [
+			{ token: "comment", foreground: "6A9955" },
+			{ token: "keyword", foreground: "569CD6" },
+			{ token: "string", foreground: "CE9178" },
+			{ token: "number", foreground: "B5CEA8" },
+			{ token: "type", foreground: "4EC9B0" },
+			{ token: "function", foreground: "DCDCAA" },
+			{ token: "variable", foreground: "9CDCFE" },
+			{ token: "constant", foreground: "4FC1FF" },
+		],
+		colors: {
+			"editor.background": "#1e1e1e",
+			"editor.foreground": "#d4d4d4",
+			"editorLineNumber.foreground": "#858585",
+			"editorLineNumber.activeForeground": "#c6c6c6",
+			"editor.selectionBackground": "#264f78",
+			"editor.lineHighlightBackground": "#2a2d2e",
+			"editorCursor.foreground": "#aeafad",
+			"editorIndentGuide.background": "#404040",
+			"editorIndentGuide.activeBackground": "#707070",
+		},
+	},
+	"vscode-light": {
+		base: "vs",
+		inherit: true,
+		rules: [
+			{ token: "comment", foreground: "008000" },
+			{ token: "keyword", foreground: "0000FF" },
+			{ token: "string", foreground: "A31515" },
+			{ token: "number", foreground: "098658" },
+			{ token: "type", foreground: "267F99" },
+			{ token: "function", foreground: "795E26" },
+			{ token: "variable", foreground: "001080" },
+			{ token: "constant", foreground: "0070C1" },
+		],
+		colors: {
+			"editor.background": "#ffffff",
+			"editor.foreground": "#333333",
+			"editorLineNumber.foreground": "#999999",
+			"editorLineNumber.activeForeground": "#333333",
+			"editor.selectionBackground": "#add6ff",
+			"editor.lineHighlightBackground": "#f7f7f7",
+			"editorCursor.foreground": "#000000",
+			"editorIndentGuide.background": "#d3d3d3",
+			"editorIndentGuide.activeBackground": "#939393",
+		},
+	},
+	"vercel-dark": {
+		base: "vs-dark",
+		inherit: false,
+		rules: [
+			{ token: "comment", foreground: "666666" },
+			{ token: "keyword", foreground: "ffffff" },
+			{ token: "string", foreground: "a3a3a3" },
+			{ token: "number", foreground: "a3a3a3" },
+			{ token: "type", foreground: "fafafa" },
+			{ token: "function", foreground: "fafafa" },
+			{ token: "variable", foreground: "e5e5e5" },
+			{ token: "constant", foreground: "fafafa" },
+		],
+		colors: {
+			"editor.background": "#000000",
+			"editor.foreground": "#fafafa",
+			"editorLineNumber.foreground": "#404040",
+			"editorLineNumber.activeForeground": "#737373",
+			"editor.selectionBackground": "#262626",
+			"editor.lineHighlightBackground": "#0a0a0a",
+			"editorCursor.foreground": "#fafafa",
+			"editorIndentGuide.background": "#1a1a1a",
+			"editorIndentGuide.activeBackground": "#333333",
+		},
+	},
+	"vercel-light": {
+		base: "vs",
+		inherit: false,
+		rules: [
+			{ token: "comment", foreground: "a3a3a3" },
+			{ token: "keyword", foreground: "171717" },
+			{ token: "string", foreground: "525252" },
+			{ token: "number", foreground: "525252" },
+			{ token: "type", foreground: "171717" },
+			{ token: "function", foreground: "171717" },
+			{ token: "variable", foreground: "404040" },
+			{ token: "constant", foreground: "171717" },
+		],
+		colors: {
+			"editor.background": "#ffffff",
+			"editor.foreground": "#171717",
+			"editorLineNumber.foreground": "#d4d4d4",
+			"editorLineNumber.activeForeground": "#a3a3a3",
+			"editor.selectionBackground": "#e5e5e5",
+			"editor.lineHighlightBackground": "#fafafa",
+			"editorCursor.foreground": "#171717",
+			"editorIndentGuide.background": "#e5e5e5",
+			"editorIndentGuide.activeBackground": "#d4d4d4",
+		},
+	},
+	"github-dark": {
+		base: "vs-dark",
+		inherit: false,
+		rules: [
+			{ token: "comment", foreground: "8B949E" },
+			{ token: "keyword", foreground: "FF7B72" },
+			{ token: "string", foreground: "A5D6FF" },
+			{ token: "number", foreground: "79C0FF" },
+			{ token: "type", foreground: "FFA657" },
+			{ token: "function", foreground: "D2A8FF" },
+			{ token: "variable", foreground: "FFA657" },
+			{ token: "constant", foreground: "79C0FF" },
+		],
+		colors: {
+			"editor.background": "#0d1117",
+			"editor.foreground": "#e6edf3",
+			"editorLineNumber.foreground": "#484F58",
+			"editorLineNumber.activeForeground": "#8B949E",
+			"editor.selectionBackground": "#264F78",
+			"editor.lineHighlightBackground": "#161b22",
+			"editorCursor.foreground": "#e6edf3",
+			"editorIndentGuide.background": "#21262d",
+			"editorIndentGuide.activeBackground": "#30363d",
+		},
+	},
+	"github-light": {
+		base: "vs",
+		inherit: false,
+		rules: [
+			{ token: "comment", foreground: "6E7781" },
+			{ token: "keyword", foreground: "CF222E" },
+			{ token: "string", foreground: "0A3069" },
+			{ token: "number", foreground: "0550AE" },
+			{ token: "type", foreground: "953800" },
+			{ token: "function", foreground: "8250DF" },
+			{ token: "variable", foreground: "953800" },
+			{ token: "constant", foreground: "0550AE" },
+		],
+		colors: {
+			"editor.background": "#ffffff",
+			"editor.foreground": "#1F2328",
+			"editorLineNumber.foreground": "#8C959F",
+			"editorLineNumber.activeForeground": "#24292F",
+			"editor.selectionBackground": "#ddf4ff",
+			"editor.lineHighlightBackground": "#f6f8fa",
+			"editorCursor.foreground": "#1F2328",
+			"editorIndentGuide.background": "#eaeef2",
+			"editorIndentGuide.activeBackground": "#d0d7de",
+		},
+	},
+	"monokai-pro": {
+		base: "vs-dark",
+		inherit: false,
+		rules: [
+			{ token: "comment", foreground: "727072" },
+			{ token: "keyword", foreground: "FF6188" },
+			{ token: "string", foreground: "FFD866" },
+			{ token: "number", foreground: "AB9DF2" },
+			{ token: "type", foreground: "78DCE8" },
+			{ token: "function", foreground: "A9DC76" },
+			{ token: "variable", foreground: "FCFCFA" },
+			{ token: "constant", foreground: "AB9DF2" },
+		],
+		colors: {
+			"editor.background": "#2d2a2e",
+			"editor.foreground": "#fcfcfa",
+			"editorLineNumber.foreground": "#5b595c",
+			"editorLineNumber.activeForeground": "#939293",
+			"editor.selectionBackground": "#5b595c",
+			"editor.lineHighlightBackground": "#363437",
+			"editorCursor.foreground": "#fcfcfa",
+			"editorIndentGuide.background": "#403e41",
+			"editorIndentGuide.activeBackground": "#5b595c",
+		},
+	},
+	dracula: {
+		base: "vs-dark",
+		inherit: false,
+		rules: [
+			{ token: "comment", foreground: "6272A4" },
+			{ token: "keyword", foreground: "FF79C6" },
+			{ token: "string", foreground: "F1FA8C" },
+			{ token: "number", foreground: "BD93F9" },
+			{ token: "type", foreground: "8BE9FD" },
+			{ token: "function", foreground: "50FA7B" },
+			{ token: "variable", foreground: "F8F8F2" },
+			{ token: "constant", foreground: "BD93F9" },
+		],
+		colors: {
+			"editor.background": "#282A36",
+			"editor.foreground": "#F8F8F2",
+			"editorLineNumber.foreground": "#6272A4",
+			"editorLineNumber.activeForeground": "#F8F8F2",
+			"editor.selectionBackground": "#44475A",
+			"editor.lineHighlightBackground": "#44475A",
+			"editorCursor.foreground": "#F8F8F2",
+			"editorIndentGuide.background": "#44475A",
+			"editorIndentGuide.activeBackground": "#6272A4",
+		},
+	},
+};
+
+export function registerMonacoThemes(monaco: typeof Monaco) {
+	for (const [name, theme] of Object.entries(monacoThemes)) {
+		monaco.editor.defineTheme(name, theme);
+	}
+}
+
+export function getThemeColors(theme: ThemeName): ThemeInfo["colors"] {
+	return themeInfo[theme].colors;
+}
+
+export function getDarkThemes(): ThemeName[] {
+	return Object.entries(themeInfo)
+		.filter(([, info]) => info.isDark)
+		.map(([name]) => name as ThemeName);
+}
+
+export function getLightThemes(): ThemeName[] {
+	return Object.entries(themeInfo)
+		.filter(([, info]) => !info.isDark)
+		.map(([name]) => name as ThemeName);
+}
