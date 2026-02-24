@@ -3,7 +3,7 @@ import { useHotkey } from "@tanstack/react-hotkeys";
 import { useCallback, useEffect, useState } from "react";
 import { Toolbar } from "#/components/header/toolbar";
 import { ThemeSelector } from "#/components/header/theme-selector";
-import { CodeEditor } from "@/components/editor";
+import { CodeEditor } from "#/components/editor";
 import { ConsoleOutput } from "#/components/output/console-output";
 import { PreviewFrame } from "#/components/output/preview-frame";
 import { OutputTabs } from "#/components/output/output-tabs";
