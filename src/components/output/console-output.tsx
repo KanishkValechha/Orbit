@@ -1,12 +1,16 @@
 import {
 	AlertCircle,
 	AlertTriangle,
+	ArrowBigUp,
 	ChevronRight,
+	Command,
+	CornerDownLeft,
 	Info,
 	Sparkles,
 	Terminal,
 	Trash2,
 } from "lucide-react";
+import { Kbd, KbdGroup } from "#/components/ui/kbd";
 import type { ThemeInfo } from "#/lib/themes/theme-data";
 import type { ConsoleMessage } from "#/lib/sandbox/types";
 
@@ -58,16 +62,25 @@ export function ConsoleOutput({
 						Run your code to see console output
 					</p>
 				</div>
-				<kbd
-					className="inline-flex items-center gap-1 px-2 py-1 text-[10px] font-mono rounded-md mt-1"
+				<KbdGroup
+					className="inline-flex mt-1 px-2 py-1"
 					style={{
 						background: themeColors.bgTertiary,
 						color: themeColors.textMuted,
 						border: `1px solid ${themeColors.border}`,
+						borderRadius: "6px",
 					}}
 				>
-					Ctrl+Shift+Enter
-				</kbd>
+					<Kbd style={{ background: "transparent", border: "none", padding: 0 }}>
+						<Command className="size-3" />
+					</Kbd>
+					<Kbd style={{ background: "transparent", border: "none", padding: 0 }}>
+						<ArrowBigUp className="size-3" />
+					</Kbd>
+					<Kbd style={{ background: "transparent", border: "none", padding: 0 }}>
+						<CornerDownLeft className="size-3" />
+					</Kbd>
+				</KbdGroup>
 			</div>
 		);
 	}

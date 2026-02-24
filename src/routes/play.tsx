@@ -281,6 +281,7 @@ function PlayPage() {
 						themeColors={themeColors}
 						onChange={setCode}
 						onCursorChange={setCursorPosition}
+						onRun={runCode}
 					/>
 				</div>
 

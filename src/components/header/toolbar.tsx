@@ -1,4 +1,15 @@
-import { Download, Loader2, Play, RotateCcw, Share2, Zap } from "lucide-react";
+import {
+	ArrowBigUp,
+	Command,
+	CornerDownLeft,
+	Download,
+	Loader2,
+	Play,
+	RotateCcw,
+	Share2,
+	Zap,
+} from "lucide-react";
+import { Kbd, KbdGroup } from "#/components/ui/kbd";
 import type { ThemeInfo } from "#/lib/themes/theme-data";
 import type { ExecutionMode } from "#/lib/sandbox/types";
 
@@ -87,16 +98,26 @@ export function Toolbar({
 					{isRunning ? "Running" : "Run"}
 				</button>
 
-				<kbd
-					className="hidden sm:inline-flex items-center gap-0.5 h-5 px-1.5 text-[10px] font-mono rounded"
+				<KbdGroup
+					className="hidden sm:inline-flex"
 					style={{
 						background: `${themeColors.bgTertiary}80`,
 						color: themeColors.textMuted,
 						border: `1px solid ${themeColors.border}50`,
+						padding: "2px 6px",
+						borderRadius: "4px",
 					}}
 				>
-					Ctrl+Shift+Enter
-				</kbd>
+					<Kbd style={{ background: "transparent", border: "none", padding: 0 }}>
+						<Command className="size-3" />
+					</Kbd>
+					<Kbd style={{ background: "transparent", border: "none", padding: 0 }}>
+						<ArrowBigUp className="size-3" />
+					</Kbd>
+					<Kbd style={{ background: "transparent", border: "none", padding: 0 }}>
+						<CornerDownLeft className="size-3" />
+					</Kbd>
+				</KbdGroup>
 			</div>
 
 			{/* Right: Controls */}
