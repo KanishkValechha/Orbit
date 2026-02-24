@@ -10,6 +10,7 @@ interface CodeEditorProps {
 	themeColors: ThemeInfo["colors"];
 	onChange: (code: string) => void;
 	onCursorChange?: (position: { line: number; column: number }) => void;
+	onRun?: () => void;
 }
 
 export function CodeEditor({
@@ -18,6 +19,7 @@ export function CodeEditor({
 	themeColors,
 	onChange,
 	onCursorChange,
+	onRun,
 }: CodeEditorProps) {
 	const editorRef = useRef<Monaco.editor.IStandaloneCodeEditor | null>(null);
 
@@ -38,7 +40,7 @@ export function CodeEditor({
 	}, []);
 
 	const handleMount: OnMount = useCallback(
-		(editor) => {
+		(editor, monaco) => {
 			editorRef.current = editor;
 			editor.getModel()?.updateOptions({ tabSize: 2 });
 
@@ -48,8 +50,14 @@ export function CodeEditor({
 					column: e.position.column,
 				});
 			});
+			if (onRun) {
+				editor.addCommand(
+					monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.Enter,
+					() => onRun(),
+				);
+			}
 		},
-		[onCursorChange],
+		[onCursorChange, onRun],
 	);
 
 	return (
