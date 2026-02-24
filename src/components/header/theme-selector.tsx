@@ -17,6 +17,8 @@ const themeList = Object.entries(themeInfo).map(([value, info]) => ({
 
 const darkThemes = themeList.filter((t) => t.isDark);
 const lightThemes = themeList.filter((t) => !t.isDark);
+// Display order matches UI: dark group first, then light group (for keyboard nav)
+const displayOrderedThemes = [...darkThemes, ...lightThemes];
 
 export function ThemeSelector({
 	theme,
@@ -29,7 +31,7 @@ export function ThemeSelector({
 	const menuRef = useRef<HTMLDivElement>(null);
 	const buttonRef = useRef<HTMLButtonElement>(null);
 
-	const currentIndex = themeList.findIndex((t) => t.value === theme);
+	const currentIndex = displayOrderedThemes.findIndex((t) => t.value === theme);
 
 	useEffect(() => {
 		if (isOpen) {
@@ -39,7 +41,7 @@ export function ThemeSelector({
 
 	useEffect(() => {
 		if (isOpen && highlightedIndex >= 0) {
-			onPreviewChange?.(themeList[highlightedIndex].value);
+			onPreviewChange?.(displayOrderedThemes[highlightedIndex].value);
 		} else if (!isOpen) {
 			onPreviewChange?.(null);
 		}
@@ -83,19 +85,19 @@ export function ThemeSelector({
 				case "ArrowDown":
 					e.preventDefault();
 					setHighlightedIndex((prev) =>
-						prev < themeList.length - 1 ? prev + 1 : 0,
+						prev < displayOrderedThemes.length - 1 ? prev + 1 : 0,
 					);
 					break;
 				case "ArrowUp":
 					e.preventDefault();
 					setHighlightedIndex((prev) =>
-						prev > 0 ? prev - 1 : themeList.length - 1,
+						prev > 0 ? prev - 1 : displayOrderedThemes.length - 1,
 					);
 					break;
 				case "Enter":
 					e.preventDefault();
 					if (highlightedIndex >= 0) {
-						selectTheme(themeList[highlightedIndex].value);
+						selectTheme(displayOrderedThemes[highlightedIndex].value);
 					}
 					break;
 				case "Escape":
@@ -147,7 +149,7 @@ export function ThemeSelector({
 					role="listbox"
 					aria-activedescendant={
 						highlightedIndex >= 0
-							? `theme-option-${themeList[highlightedIndex].value}`
+							? `theme-option-${displayOrderedThemes[highlightedIndex].value}`
 							: undefined
 					}
 				>
@@ -160,7 +162,7 @@ export function ThemeSelector({
 						themeColors={themeColors}
 						onSelect={selectTheme}
 						onHighlight={setHighlightedIndex}
-						allThemes={themeList}
+						allThemes={displayOrderedThemes}
 					/>
 
 					<div
@@ -177,7 +179,7 @@ export function ThemeSelector({
 						themeColors={themeColors}
 						onSelect={selectTheme}
 						onHighlight={setHighlightedIndex}
-						allThemes={themeList}
+						allThemes={displayOrderedThemes}
 					/>
 				</div>
 			)}
