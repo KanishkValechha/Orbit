@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useHotkey } from "@tanstack/react-hotkeys";
 import { useMutation } from "convex/react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { api } from "../../convex/_generated/api";
 import { Toolbar } from "#/components/header/toolbar";
 import { ThemeSelector } from "#/components/header/theme-selector";
@@ -9,6 +9,7 @@ import { CodeEditor } from "#/components/editor";
 import { ConsoleOutput } from "#/components/output/console-output";
 import { PreviewFrame } from "#/components/output/preview-frame";
 import { OutputTabs } from "#/components/output/output-tabs";
+import { StatusBar } from "#/components/footer/status-bar";
 import {
 	type ConsoleMessage,
 	type ExecutionMode,
@@ -70,6 +71,10 @@ function PlayPage() {
 	const [executionTime, setExecutionTime] = useState<number | null>(null);
 	const [mode, setMode] = useState<ExecutionMode>("iframe");
 	const [previewTheme, setPreviewTheme] = useState<ThemeName | null>(null);
+	const [cursorPosition, setCursorPosition] = useState({ line: 1, column: 1 });
+	const [outputWidth, setOutputWidth] = useState(420);
+	const isDragging = useRef(false);
+	const containerRef = useRef<HTMLDivElement>(null);
 
 	const activeTheme = previewTheme ?? theme;
 
@@ -157,7 +162,9 @@ function PlayPage() {
 				{
 					id: crypto.randomUUID(),
 					type: "error" as const,
-					args: [{ name: "ShareError", message: "Failed to create share link" }],
+					args: [
+						{ name: "ShareError", message: "Failed to create share link" },
+					],
 					timestamp: Date.now(),
 				},
 			]);
@@ -181,32 +188,70 @@ function PlayPage() {
 		setMessages([]);
 	}, []);
 
+	const handleResizeStart = useCallback(
+		(e: React.MouseEvent) => {
+			e.preventDefault();
+			isDragging.current = true;
+			const startX = e.clientX;
+			const startWidth = outputWidth;
+
+			const handleMouseMove = (e: MouseEvent) => {
+				if (!isDragging.current) return;
+				const delta = startX - e.clientX;
+				const newWidth = Math.max(280, Math.min(700, startWidth + delta));
+				setOutputWidth(newWidth);
+			};
+
+			const handleMouseUp = () => {
+				isDragging.current = false;
+				document.removeEventListener("mousemove", handleMouseMove);
+				document.removeEventListener("mouseup", handleMouseUp);
+				document.body.style.cursor = "";
+				document.body.style.userSelect = "";
+			};
+
+			document.body.style.cursor = "col-resize";
+			document.body.style.userSelect = "none";
+			document.addEventListener("mousemove", handleMouseMove);
+			document.addEventListener("mouseup", handleMouseUp);
+		},
+		[outputWidth],
+	);
+
 	const themeColors = themeInfo[activeTheme].colors;
 	const errorCount = messages.filter((m) => m.type === "error").length;
 	const warnCount = messages.filter((m) => m.type === "warn").length;
 
 	return (
 		<div
-			className="h-screen flex flex-col overflow-hidden"
+			ref={containerRef}
+			className="h-screen flex flex-col overflow-hidden relative noise-overlay"
 			style={{ background: themeColors.bg }}
 		>
-			<div className="fixed inset-0 pointer-events-none overflow-hidden">
+			{/* Atmospheric background glows */}
+			<div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
 				<div
-					className="absolute -top-40 -left-40 w-80 h-80 rounded-full opacity-30"
+					className="absolute -top-[200px] -left-[200px] w-[500px] h-[500px] rounded-full"
 					style={{
-						background: `radial-gradient(circle, ${themeColors.accent}20 0%, transparent 70%)`,
-						filter: "blur(60px)",
-					}}
-				/>
-				<div
-					className="absolute -bottom-40 -right-40 w-96 h-96 rounded-full opacity-20"
-					style={{
-						background: `radial-gradient(circle, ${themeColors.accent}15 0%, transparent 70%)`,
+						background: `radial-gradient(circle, ${themeColors.accent}08 0%, transparent 70%)`,
 						filter: "blur(80px)",
 					}}
 				/>
+				<div
+					className="absolute -bottom-[200px] -right-[200px] w-[600px] h-[600px] rounded-full"
+					style={{
+						background: `radial-gradient(circle, ${themeColors.accent}06 0%, transparent 70%)`,
+						filter: "blur(100px)",
+					}}
+				/>
+				{/* Dot grid texture */}
+				<div
+					className="absolute inset-0 bg-dot-grid opacity-[0.03]"
+					style={{ color: themeColors.text }}
+				/>
 			</div>
 
+			{/* Header */}
 			<Toolbar
 				themeColors={themeColors}
 				isRunning={isRunning}
@@ -226,20 +271,46 @@ function PlayPage() {
 				/>
 			</Toolbar>
 
-			<div className="flex-1 flex overflow-hidden relative">
-				<div
-					className="flex-1 flex flex-col min-w-0"
-					style={{ borderRight: `1px solid ${themeColors.border}` }}
-				>
+			{/* Main content */}
+			<div className="flex-1 flex overflow-hidden relative z-1">
+				{/* Editor panel */}
+				<div className="flex-1 flex flex-col min-w-0">
 					<CodeEditor
 						code={code}
 						theme={activeTheme}
 						themeColors={themeColors}
 						onChange={setCode}
+						onCursorChange={setCursorPosition}
 					/>
 				</div>
 
-				<div className="w-[400px] flex flex-col shrink-0">
+				{/* Resize handle */}
+				<div
+					className="resize-handle w-[3px] shrink-0 relative z-10"
+					style={{ background: themeColors.border }}
+					onMouseDown={handleResizeStart}
+				>
+					<div
+						className="absolute inset-0"
+						style={{
+							background: `linear-gradient(180deg, ${themeColors.accent}00 0%, ${themeColors.accent}15 50%, ${themeColors.accent}00 100%)`,
+							opacity: 0,
+							transition: "opacity 0.15s ease",
+						}}
+						onMouseEnter={(e) => {
+							e.currentTarget.style.opacity = "1";
+						}}
+						onMouseLeave={(e) => {
+							e.currentTarget.style.opacity = "0";
+						}}
+					/>
+				</div>
+
+				{/* Output panel */}
+				<div
+					className="flex flex-col shrink-0"
+					style={{ width: outputWidth }}
+				>
 					<OutputTabs
 						activeTab={activeTab}
 						messageCount={messages.length}
@@ -263,6 +334,16 @@ function PlayPage() {
 					</div>
 				</div>
 			</div>
+
+			{/* Status bar */}
+			<StatusBar
+				themeColors={themeColors}
+				themeName={activeTheme}
+				cursorPosition={cursorPosition}
+				isRunning={isRunning}
+				executionTime={executionTime}
+				messageCount={messages.length}
+			/>
 		</div>
 	);
 }

@@ -9,6 +9,7 @@ interface CodeEditorProps {
 	theme: ThemeName;
 	themeColors: ThemeInfo["colors"];
 	onChange: (code: string) => void;
+	onCursorChange?: (position: { line: number; column: number }) => void;
 }
 
 export function CodeEditor({
@@ -16,6 +17,7 @@ export function CodeEditor({
 	theme,
 	themeColors,
 	onChange,
+	onCursorChange,
 }: CodeEditorProps) {
 	const editorRef = useRef<Monaco.editor.IStandaloneCodeEditor | null>(null);
 
@@ -24,7 +26,8 @@ export function CodeEditor({
 		monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
 			target: monaco.languages.typescript.ScriptTarget.ESNext,
 			module: monaco.languages.typescript.ModuleKind.ESNext,
-			moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
+			moduleResolution:
+				monaco.languages.typescript.ModuleResolutionKind.NodeJs,
 			allowNonTsExtensions: true,
 			allowSyntheticDefaultImports: true,
 			esModuleInterop: true,
@@ -34,10 +37,20 @@ export function CodeEditor({
 		});
 	}, []);
 
-	const handleMount: OnMount = useCallback((editor) => {
-		editorRef.current = editor;
-		editor.getModel()?.updateOptions({ tabSize: 2 });
-	}, []);
+	const handleMount: OnMount = useCallback(
+		(editor) => {
+			editorRef.current = editor;
+			editor.getModel()?.updateOptions({ tabSize: 2 });
+
+			editor.onDidChangeCursorPosition((e) => {
+				onCursorChange?.({
+					line: e.position.lineNumber,
+					column: e.position.column,
+				});
+			});
+		},
+		[onCursorChange],
+	);
 
 	return (
 		<Editor
@@ -53,18 +66,22 @@ export function CodeEditor({
 					className="flex items-center justify-center h-full"
 					style={{ background: themeColors.bg }}
 				>
-					<div
-						className="flex items-center gap-3"
-						style={{ color: themeColors.textMuted }}
-					>
-						<div
-							className="w-4 h-4 border-2 rounded-full animate-spin"
-							style={{
-								borderColor: `${themeColors.accent}40`,
-								borderTopColor: themeColors.accent,
-							}}
-						/>
-						<span className="text-sm">Loading editor...</span>
+					<div className="flex flex-col items-center gap-3">
+						<div className="relative w-8 h-8">
+							<div
+								className="absolute inset-0 rounded-full orbit-spinner"
+								style={{
+									border: `2px solid ${themeColors.border}`,
+									borderTopColor: themeColors.accent,
+								}}
+							/>
+						</div>
+						<span
+							className="text-[11px] font-medium"
+							style={{ color: themeColors.textMuted }}
+						>
+							Loading editor...
+						</span>
 					</div>
 				</div>
 			}
@@ -72,7 +89,8 @@ export function CodeEditor({
 				lineNumbers: "on",
 				minimap: { enabled: false },
 				wordWrap: "on",
-				fontSize: 14,
+				fontSize: 13,
+				lineHeight: 20,
 				fontFamily: "'JetBrains Mono', 'Fira Code', 'Consolas', monospace",
 				fontLigatures: true,
 				scrollBeyondLastLine: false,
@@ -90,9 +108,13 @@ export function CodeEditor({
 				scrollbar: {
 					vertical: "auto",
 					horizontal: "auto",
-					verticalScrollbarSize: 8,
-					horizontalScrollbarSize: 8,
+					verticalScrollbarSize: 6,
+					horizontalScrollbarSize: 6,
 				},
+				glyphMargin: false,
+				folding: true,
+				lineDecorationsWidth: 8,
+				lineNumbersMinChars: 3,
 			}}
 		/>
 	);

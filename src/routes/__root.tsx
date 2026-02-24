@@ -1,5 +1,9 @@
 import { TanStackDevtools } from "@tanstack/react-devtools";
-import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
+import {
+	createRootRoute,
+	HeadContent,
+	Scripts,
+} from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { ConvexProvider, ConvexReactClient } from "convex/react";
 
@@ -18,12 +22,12 @@ export const Route = createRootRoute({
 				content: "width=device-width, initial-scale=1",
 			},
 			{
-				title: "Orbit - Modern JavaScript/TypeScript Playground",
+				title: "Orbit - JavaScript & TypeScript Playground",
 			},
 			{
 				name: "description",
 				content:
-					"A modern, fast, and beautiful JavaScript/TypeScript playground with Monaco editor, multiple themes, and real-time code execution.",
+					"A fast, beautiful playground for JavaScript and TypeScript with real-time execution, multiple themes, and instant sharing.",
 			},
 		],
 		links: [
@@ -32,9 +36,13 @@ export const Route = createRootRoute({
 				href: appCss,
 			},
 			{
+				rel: "preconnect",
+				href: "https://cdn.jsdelivr.net",
+			},
+			{
 				rel: "icon",
 				type: "image/svg+xml",
-				href: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%2300d4ff"/><stop offset="50%" style="stop-color:%230066ff"/><stop offset="100%" style="stop-color:%23a855f7"/></linearGradient></defs><rect width="100" height="100" rx="20" fill="url(%23g)"/><path d="M25 65V35l15 15-15 15zm25-30v30l15-15-15-15z" fill="white"/></svg>',
+				href: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="g" x1="0%25" y1="0%25" x2="100%25" y2="100%25"><stop offset="0%25" style="stop-color:%2300c6fb"/><stop offset="100%25" style="stop-color:%23005bea"/></linearGradient></defs><rect width="100" height="100" rx="22" fill="url(%23g)"/><path d="M30 62V38l12 12-12 12zm22-24v24l12-12-12-12z" fill="white" opacity="0.95"/></svg>',
 			},
 		],
 	}),

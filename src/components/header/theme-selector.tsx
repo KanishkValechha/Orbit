@@ -1,4 +1,4 @@
-import { ChevronDown } from "lucide-react";
+import { Check, ChevronDown, Moon, Sun } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ThemeInfo, ThemeName } from "#/lib/themes/theme-data";
 import { themeInfo } from "#/lib/themes/theme-data";
@@ -14,6 +14,9 @@ const themeList = Object.entries(themeInfo).map(([value, info]) => ({
 	value: value as ThemeName,
 	...info,
 }));
+
+const darkThemes = themeList.filter((t) => t.isDark);
+const lightThemes = themeList.filter((t) => !t.isDark);
 
 export function ThemeSelector({
 	theme,
@@ -53,7 +56,7 @@ export function ThemeSelector({
 			onThemeChange(themeName);
 			closeMenu();
 		},
-		[onThemeChange, closeMenu]
+		[onThemeChange, closeMenu],
 	);
 
 	useEffect(() => {
@@ -80,13 +83,13 @@ export function ThemeSelector({
 				case "ArrowDown":
 					e.preventDefault();
 					setHighlightedIndex((prev) =>
-						prev < themeList.length - 1 ? prev + 1 : 0
+						prev < themeList.length - 1 ? prev + 1 : 0,
 					);
 					break;
 				case "ArrowUp":
 					e.preventDefault();
 					setHighlightedIndex((prev) =>
-						prev > 0 ? prev - 1 : themeList.length - 1
+						prev > 0 ? prev - 1 : themeList.length - 1,
 					);
 					break;
 				case "Enter":
@@ -105,8 +108,10 @@ export function ThemeSelector({
 					break;
 			}
 		},
-		[isOpen, highlightedIndex, selectTheme, closeMenu]
+		[isOpen, highlightedIndex, selectTheme, closeMenu],
 	);
+
+	const currentTheme = themeInfo[theme];
 
 	return (
 		<div className="relative" ref={menuRef} onKeyDown={handleKeyDown}>
@@ -114,7 +119,7 @@ export function ThemeSelector({
 				ref={buttonRef}
 				type="button"
 				onClick={() => setIsOpen(!isOpen)}
-				className="flex items-center gap-2 px-2.5 py-1.5 text-xs rounded-md transition-colors"
+				className="flex items-center gap-2 h-7 px-2.5 text-[11px] font-medium rounded-md transition-all duration-150 cursor-pointer"
 				style={{
 					background: themeColors.bgTertiary,
 					color: themeColors.textMuted,
@@ -123,26 +128,21 @@ export function ThemeSelector({
 				aria-haspopup="listbox"
 				aria-expanded={isOpen}
 			>
-				<div
-					className="w-3 h-3 rounded-full"
-					style={{
-						background: themeInfo[theme].isDark
-							? "linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)"
-							: "linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%)",
-						border: `1px solid ${themeColors.border}`,
-					}}
+				<ThemeSwatch colors={themeColors} size={10} />
+				<span className="max-w-[80px] truncate">{currentTheme.label}</span>
+				<ChevronDown
+					className="w-3 h-3 transition-transform duration-150"
+					style={{ transform: isOpen ? "rotate(180deg)" : "none" }}
 				/>
-				{themeInfo[theme].label}
-				<ChevronDown className="w-3 h-3" />
 			</button>
 
 			{isOpen && (
 				<div
-					className="absolute top-full right-0 mt-1 py-1 rounded-lg shadow-xl z-50 min-w-[160px]"
+					className="absolute top-full right-0 mt-1.5 py-1 rounded-lg shadow-2xl z-50 w-[200px] animate-scale-in"
 					style={{
 						background: themeColors.bgSecondary,
 						border: `1px solid ${themeColors.border}`,
-						backdropFilter: "blur(12px)",
+						boxShadow: `0 16px 48px rgba(0,0,0,0.3), 0 0 0 1px ${themeColors.border}`,
 					}}
 					role="listbox"
 					aria-activedescendant={
@@ -151,46 +151,133 @@ export function ThemeSelector({
 							: undefined
 					}
 				>
-					{themeList.map((t, index) => {
-						const isHighlighted = index === highlightedIndex;
-						const isSelected = theme === t.value;
+					<ThemeGroup
+						label="Dark"
+						icon={<Moon className="w-3 h-3" />}
+						themes={darkThemes}
+						selectedTheme={theme}
+						highlightedIndex={highlightedIndex}
+						themeColors={themeColors}
+						onSelect={selectTheme}
+						onHighlight={setHighlightedIndex}
+						allThemes={themeList}
+					/>
 
-						return (
-							<button
-								key={t.value}
-								id={`theme-option-${t.value}`}
-								type="button"
-								role="option"
-								aria-selected={isSelected}
-								onClick={() => selectTheme(t.value)}
-								onMouseEnter={() => setHighlightedIndex(index)}
-								className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-left transition-colors"
-								style={{
-									color: isHighlighted || isSelected
-										? themeColors.text
-										: themeColors.textMuted,
-									background: isHighlighted
-										? `${themeColors.accent}20`
-										: isSelected
-											? `${themeColors.accent}10`
-											: "transparent",
-								}}
-							>
-								<div
-									className="w-3 h-3 rounded-full shrink-0"
-									style={{
-										background: t.isDark
-											? "linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)"
-											: "linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%)",
-										border: `1px solid ${themeColors.border}`,
-									}}
-								/>
-								{t.label}
-							</button>
-						);
-					})}
+					<div
+						className="mx-2 my-1 h-px"
+						style={{ background: themeColors.border }}
+					/>
+
+					<ThemeGroup
+						label="Light"
+						icon={<Sun className="w-3 h-3" />}
+						themes={lightThemes}
+						selectedTheme={theme}
+						highlightedIndex={highlightedIndex}
+						themeColors={themeColors}
+						onSelect={selectTheme}
+						onHighlight={setHighlightedIndex}
+						allThemes={themeList}
+					/>
 				</div>
 			)}
+		</div>
+	);
+}
+
+function ThemeGroup({
+	label,
+	icon,
+	themes,
+	selectedTheme,
+	highlightedIndex,
+	themeColors,
+	onSelect,
+	onHighlight,
+	allThemes,
+}: {
+	label: string;
+	icon: React.ReactNode;
+	themes: typeof themeList;
+	selectedTheme: ThemeName;
+	highlightedIndex: number;
+	themeColors: ThemeInfo["colors"];
+	onSelect: (t: ThemeName) => void;
+	onHighlight: (i: number) => void;
+	allThemes: typeof themeList;
+}) {
+	return (
+		<div>
+			<div
+				className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider"
+				style={{ color: themeColors.textMuted }}
+			>
+				{icon}
+				{label}
+			</div>
+			{themes.map((t) => {
+				const globalIndex = allThemes.findIndex(
+					(at) => at.value === t.value,
+				);
+				const isHighlighted = globalIndex === highlightedIndex;
+				const isSelected = selectedTheme === t.value;
+
+				return (
+					<button
+						key={t.value}
+						id={`theme-option-${t.value}`}
+						type="button"
+						role="option"
+						aria-selected={isSelected}
+						onClick={() => onSelect(t.value)}
+						onMouseEnter={() => onHighlight(globalIndex)}
+						className="w-full flex items-center gap-2.5 px-3 py-1.5 text-[11px] text-left transition-all duration-100 cursor-pointer"
+						style={{
+							color:
+								isHighlighted || isSelected
+									? themeColors.text
+									: themeColors.textMuted,
+							background: isHighlighted
+								? `${themeColors.accent}15`
+								: "transparent",
+							borderRadius: "4px",
+							margin: "0 4px",
+							width: "calc(100% - 8px)",
+						}}
+					>
+						<ThemeSwatch colors={t.colors} size={12} />
+						<span className="flex-1 truncate">{t.label}</span>
+						{isSelected && (
+							<Check
+								className="w-3 h-3 shrink-0"
+								style={{ color: themeColors.accent }}
+							/>
+						)}
+					</button>
+				);
+			})}
+		</div>
+	);
+}
+
+function ThemeSwatch({
+	colors,
+	size = 12,
+}: { colors: ThemeInfo["colors"]; size?: number }) {
+	return (
+		<div
+			className="rounded-sm shrink-0 overflow-hidden flex"
+			style={{
+				width: size,
+				height: size,
+				border: `1px solid ${colors.border}`,
+			}}
+		>
+			<div className="w-1/2 h-full" style={{ background: colors.bg }} />
+			<div
+				className="w-1/2 h-full"
+				style={{ background: colors.accent }}
+			/>
 		</div>
 	);
 }
