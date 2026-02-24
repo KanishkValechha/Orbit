@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useHotkey } from "@tanstack/react-hotkeys";
+import { useMutation } from "convex/react";
 import { useCallback, useEffect, useState } from "react";
+import { api } from "../../convex/_generated/api";
 import { Toolbar } from "#/components/header/toolbar";
 import { ThemeSelector } from "#/components/header/theme-selector";
 import { CodeEditor } from "#/components/editor";
@@ -43,6 +45,8 @@ export const Route = createFileRoute("/play")({
 });
 
 function PlayPage() {
+	const createSnippet = useMutation(api.snippets.create);
+
 	const [theme, setTheme] = useState<ThemeName>(() => {
 		if (typeof window !== "undefined") {
 			return (
@@ -62,8 +66,12 @@ function PlayPage() {
 	const [activeTab, setActiveTab] = useState<"console" | "preview">("console");
 	const [messages, setMessages] = useState<ConsoleMessage[]>([]);
 	const [isRunning, setIsRunning] = useState(false);
+	const [isSharing, setIsSharing] = useState(false);
 	const [executionTime, setExecutionTime] = useState<number | null>(null);
 	const [mode, setMode] = useState<ExecutionMode>("iframe");
+	const [previewTheme, setPreviewTheme] = useState<ThemeName | null>(null);
+
+	const activeTheme = previewTheme ?? theme;
 
 	useEffect(() => {
 		localStorage.setItem("orbit-theme", theme);
@@ -124,6 +132,40 @@ function PlayPage() {
 		runCode();
 	});
 
+	const handleShare = useCallback(async () => {
+		setIsSharing(true);
+		try {
+			const id = await createSnippet({
+				code,
+				language: "typescript",
+				theme,
+			});
+			const shareUrl = `${window.location.origin}/play/${id}`;
+			await navigator.clipboard.writeText(shareUrl);
+			setMessages((prev) => [
+				...prev,
+				{
+					id: crypto.randomUUID(),
+					type: "info" as const,
+					args: ["Share link copied to clipboard!"],
+					timestamp: Date.now(),
+				},
+			]);
+		} catch {
+			setMessages((prev) => [
+				...prev,
+				{
+					id: crypto.randomUUID(),
+					type: "error" as const,
+					args: [{ name: "ShareError", message: "Failed to create share link" }],
+					timestamp: Date.now(),
+				},
+			]);
+		} finally {
+			setIsSharing(false);
+		}
+	}, [code, theme, createSnippet]);
+
 	const handleDownload = useCallback(() => {
 		const blob = new Blob([code], { type: "text/typescript" });
 		const url = URL.createObjectURL(blob);
@@ -139,7 +181,7 @@ function PlayPage() {
 		setMessages([]);
 	}, []);
 
-	const themeColors = themeInfo[theme].colors;
+	const themeColors = themeInfo[activeTheme].colors;
 	const errorCount = messages.filter((m) => m.type === "error").length;
 	const warnCount = messages.filter((m) => m.type === "warn").length;
 
@@ -173,11 +215,14 @@ function PlayPage() {
 				onReset={handleReset}
 				onDownload={handleDownload}
 				onModeChange={setMode}
+				onShare={handleShare}
+				isSharing={isSharing}
 			>
 				<ThemeSelector
 					theme={theme}
 					themeColors={themeColors}
 					onThemeChange={setTheme}
+					onPreviewChange={setPreviewTheme}
 				/>
 			</Toolbar>
 
@@ -188,7 +233,7 @@ function PlayPage() {
 				>
 					<CodeEditor
 						code={code}
-						theme={theme}
+						theme={activeTheme}
 						themeColors={themeColors}
 						onChange={setCode}
 					/>

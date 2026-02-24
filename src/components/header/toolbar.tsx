@@ -1,4 +1,4 @@
-import { ChevronDown, Code2, Download, Play, RotateCcw } from "lucide-react";
+import { ChevronDown, Code2, Download, Play, RotateCcw, Share2 } from "lucide-react";
 import type { ThemeInfo } from "#/lib/themes/theme-data";
 import type { ExecutionMode } from "#/lib/sandbox/types";
 
@@ -10,6 +10,8 @@ interface ToolbarProps {
 	onReset: () => void;
 	onDownload: () => void;
 	onModeChange: (mode: ExecutionMode) => void;
+	onShare?: () => void;
+	isSharing?: boolean;
 	children?: React.ReactNode;
 }
 
@@ -21,6 +23,8 @@ export function Toolbar({
 	onReset,
 	onDownload,
 	onModeChange,
+	onShare,
+	isSharing,
 	children,
 }: ToolbarProps) {
 	return (
@@ -123,6 +127,23 @@ export function Toolbar({
 				>
 					<Download className="w-4 h-4" />
 				</button>
+				{onShare && (
+					<button
+						type="button"
+						onClick={onShare}
+						disabled={isSharing}
+						className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md transition-colors disabled:opacity-50"
+						style={{
+							background: themeColors.bgTertiary,
+							color: themeColors.textMuted,
+							border: `1px solid ${themeColors.border}`,
+						}}
+						title="Share code"
+					>
+						<Share2 className="w-3.5 h-3.5" />
+						{isSharing ? "Sharing..." : "Share"}
+					</button>
+				)}
 			</div>
 		</header>
 	);
