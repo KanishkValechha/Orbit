@@ -20,7 +20,7 @@ import {
 	type ExecutionMode,
 	executeCode,
 } from "../lib/sandbox/execute";
-import { registerMonacoThemes, type ThemeName, themeInfo } from "../lib/themes";
+import { registerMonacoThemes, type ThemeName, themeInfo } from "../lib/themes/utils";
 
 const DEFAULT_CODE = `// Welcome to Orbit ✨
 // Write JavaScript or TypeScript and press Ctrl/Cmd + Enter to run
