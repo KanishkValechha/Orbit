@@ -19,7 +19,7 @@ import {
 	type ConsoleMessage,
 	type ExecutionMode,
 	executeCode,
-} from "../lib/sandbox";
+} from "../lib/sandbox/execute";
 import { registerMonacoThemes, type ThemeName, themeInfo } from "../lib/themes";
 
 const DEFAULT_CODE = `// Welcome to Orbit ✨
