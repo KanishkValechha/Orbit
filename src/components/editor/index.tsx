@@ -1,8 +1,8 @@
 import Editor, { type BeforeMount, type OnMount } from "@monaco-editor/react";
 import type * as Monaco from "monaco-editor";
 import { useCallback, useRef } from "react";
-import type { ThemeInfo, ThemeName } from "#/lib/themes/theme-data";
 import { registerMonacoThemes } from "#/lib/themes/monaco-themes";
+import type { ThemeInfo, ThemeName } from "#/lib/themes/theme-data";
 
 interface CodeEditorProps {
 	code: string;
@@ -22,14 +22,16 @@ export function CodeEditor({
 	onRun,
 }: CodeEditorProps) {
 	const editorRef = useRef<Monaco.editor.IStandaloneCodeEditor | null>(null);
+	const onRunRef = useRef(onRun);
+
+	onRunRef.current = onRun;
 
 	const handleBeforeMount: BeforeMount = useCallback((monaco) => {
 		registerMonacoThemes(monaco);
 		monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
 			target: monaco.languages.typescript.ScriptTarget.ESNext,
 			module: monaco.languages.typescript.ModuleKind.ESNext,
-			moduleResolution:
-				monaco.languages.typescript.ModuleResolutionKind.NodeJs,
+			moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
 			allowNonTsExtensions: true,
 			allowSyntheticDefaultImports: true,
 			esModuleInterop: true,
@@ -50,14 +52,12 @@ export function CodeEditor({
 					column: e.position.column,
 				});
 			});
-			if (onRun) {
-				editor.addCommand(
-					monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.Enter,
-					() => onRun(),
-				);
-			}
+			editor.addCommand(
+				monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.Enter,
+				() => onRunRef.current?.(),
+			);
 		},
-		[onCursorChange, onRun],
+		[onCursorChange],
 	);
 
 	return (
