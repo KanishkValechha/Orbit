@@ -53,7 +53,7 @@ export function Toolbar({
 					className="text-sm font-medium tracking-tight"
 					style={{ color: themeColors.text }}
 				>
-					orbit
+					Orbit
 				</span>
 			</div>
 

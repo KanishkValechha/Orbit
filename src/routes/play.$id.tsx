@@ -17,21 +17,7 @@ import {
 	executeCode,
 } from "#/lib/sandbox/execute";
 import { type ThemeName, themeInfo } from "#/lib/themes/theme-data";
-
-const DEFAULT_CODE = `// Welcome to Orbit
-// Write JavaScript or TypeScript and press Ctrl+Shift+Enter to run
-
-function fibonacci(n: number): number[] {
-  const seq: number[] = [0, 1]
-  for (let i = 2; i < n; i++) {
-    seq.push(seq[i - 1] + seq[i - 2])
-  }
-  return seq.slice(0, n)
-}
-
-console.log('Fibonacci sequence:')
-console.log(fibonacci(10))
-`;
+import { DEFAULT_CODE } from "#/lib/constants/default-code";
 
 export const Route = createFileRoute("/play/$id")({
 	component: SharedPlayPage,
