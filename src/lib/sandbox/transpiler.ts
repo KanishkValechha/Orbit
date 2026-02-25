@@ -35,6 +35,8 @@ export function transpileTypeScript(code: string): string {
 	result = result.replace(/<\s*\w+\s*>/g, "");
 	result = result.replace(/<\s*\w+\s*,\s*\w+\s*>/g, "");
 
+	result = result.replace(/:\s*[A-Za-z_$][\w$]*(?:\s*<[^>]*>)?\s*(?=\s*\{)/g, "");
+
 	result = result.replace(/\binterface\s+\w+\s*(?:<[^>]+>)?\s*\{[^}]*\}/g, "");
 	result = result.replace(/\btype\s+\w+\s*(?:<[^>]+>)?\s*=\s*[^;]+;/g, "");
 
