@@ -1,23 +1,23 @@
+import { useHotkey } from "@tanstack/react-hotkeys";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
-import { useHotkey } from "@tanstack/react-hotkeys";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { api } from "../../convex/_generated/api";
-import type { Id } from "../../convex/_generated/dataModel";
-import { Toolbar } from "#/components/header/toolbar";
-import { ThemeSelector } from "#/components/header/theme-selector";
 import { CodeEditor } from "#/components/editor";
-import { ConsoleOutput } from "#/components/output/console-output";
-import { PreviewFrame } from "#/components/output/preview-frame";
-import { OutputTabs } from "#/components/output/output-tabs";
 import { StatusBar } from "#/components/footer/status-bar";
+import { ThemeSelector } from "#/components/header/theme-selector";
+import { Toolbar } from "#/components/header/toolbar";
+import { ConsoleOutput } from "#/components/output/console-output";
+import { OutputTabs } from "#/components/output/output-tabs";
+import { PreviewFrame } from "#/components/output/preview-frame";
+import { DEFAULT_CODE } from "#/lib/constants/default-code";
 import {
 	type ConsoleMessage,
 	type ExecutionMode,
 	executeCode,
 } from "#/lib/sandbox/execute";
 import { type ThemeName, themeInfo } from "#/lib/themes/theme-data";
-import { DEFAULT_CODE } from "#/lib/constants/default-code";
+import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 
 export const Route = createFileRoute("/play/$id")({
 	component: SharedPlayPage,
@@ -105,9 +105,12 @@ function SharedPlayPage() {
 		}
 	}, [code, mode, handleConsole]);
 
+	const runCodeRef = useRef(runCode);
+	runCodeRef.current = runCode;
+
 	useHotkey("Mod+Shift+Enter", (e) => {
 		e.preventDefault();
-		runCode();
+		runCodeRef.current();
 	});
 
 	const handleDownload = useCallback(() => {
@@ -241,10 +244,7 @@ function SharedPlayPage() {
 					onMouseDown={handleResizeStart}
 				/>
 
-				<div
-					className="flex flex-col shrink-0"
-					style={{ width: outputWidth }}
-				>
+				<div className="flex flex-col shrink-0" style={{ width: outputWidth }}>
 					<OutputTabs
 						activeTab={activeTab}
 						messageCount={messages.length}
