@@ -42,7 +42,7 @@ export const Route = createRootRoute({
 			{
 				rel: "icon",
 				type: "image/svg+xml",
-				href: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="g" x1="0%25" y1="0%25" x2="100%25" y2="100%25"><stop offset="0%25" style="stop-color:%2300c6fb"/><stop offset="100%25" style="stop-color:%23005bea"/></linearGradient></defs><rect width="100" height="100" rx="22" fill="url(%23g)"/><path d="M30 62V38l12 12-12 12zm22-24v24l12-12-12-12z" fill="white" opacity="0.95"/></svg>',
+				href: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23171717" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
 			},
 		],
 	}),

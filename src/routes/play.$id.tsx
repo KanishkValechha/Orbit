@@ -217,31 +217,9 @@ function SharedPlayPage() {
 
 	return (
 		<div
-			className="h-screen flex flex-col overflow-hidden relative noise-overlay"
+			className="h-screen flex flex-col overflow-hidden relative"
 			style={{ background: themeColors.bg }}
 		>
-			{/* Atmospheric background */}
-			<div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-				<div
-					className="absolute -top-[200px] -left-[200px] w-[500px] h-[500px] rounded-full"
-					style={{
-						background: `radial-gradient(circle, ${themeColors.accent}08 0%, transparent 70%)`,
-						filter: "blur(80px)",
-					}}
-				/>
-				<div
-					className="absolute -bottom-[200px] -right-[200px] w-[600px] h-[600px] rounded-full"
-					style={{
-						background: `radial-gradient(circle, ${themeColors.accent}06 0%, transparent 70%)`,
-						filter: "blur(100px)",
-					}}
-				/>
-				<div
-					className="absolute inset-0 bg-dot-grid opacity-[0.03]"
-					style={{ color: themeColors.text }}
-				/>
-			</div>
-
 			<Toolbar
 				themeColors={themeColors}
 				isRunning={isRunning}
@@ -272,25 +250,10 @@ function SharedPlayPage() {
 				</div>
 
 				<div
-					className="resize-handle w-[3px] shrink-0 relative z-10"
+					className="resize-handle w-[2px] shrink-0 relative z-10"
 					style={{ background: themeColors.border }}
 					onMouseDown={handleResizeStart}
-				>
-					<div
-						className="absolute inset-0"
-						style={{
-							background: `linear-gradient(180deg, ${themeColors.accent}00 0%, ${themeColors.accent}15 50%, ${themeColors.accent}00 100%)`,
-							opacity: 0,
-							transition: "opacity 0.15s ease",
-						}}
-						onMouseEnter={(e) => {
-							e.currentTarget.style.opacity = "1";
-						}}
-						onMouseLeave={(e) => {
-							e.currentTarget.style.opacity = "0";
-						}}
-					/>
-				</div>
+				/>
 
 				<div
 					className="flex flex-col shrink-0"

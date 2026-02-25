@@ -1,5 +1,6 @@
 import {
 	ArrowBigUp,
+	Code,
 	Command,
 	CornerDownLeft,
 	Download,
@@ -7,7 +8,6 @@ import {
 	Play,
 	RotateCcw,
 	Share2,
-	Zap,
 } from "lucide-react";
 import { Kbd, KbdGroup } from "#/components/ui/kbd";
 import type { ThemeInfo } from "#/lib/themes/theme-data";
@@ -40,64 +40,24 @@ export function Toolbar({
 }: ToolbarProps) {
 	return (
 		<header
-			className="relative flex items-center justify-between px-4 h-12 z-10 glass-panel shrink-0"
+			className="relative flex items-center justify-between px-4 h-12 z-10 shrink-0"
 			style={{
 				borderBottom: `1px solid ${themeColors.border}`,
-				background: `${themeColors.bgSecondary}e6`,
+				background: themeColors.bgSecondary,
 			}}
 		>
-			{/* Left: Logo + Run */}
-			<div className="flex items-center gap-3">
-				<div className="flex items-center gap-2">
-					<div
-						className="w-6 h-6 rounded-md flex items-center justify-center"
-						style={{
-							background:
-								"linear-gradient(135deg, #00d4ff 0%, #0066ff 50%, #a855f7 100%)",
-							boxShadow: "0 2px 8px rgba(0, 102, 255, 0.3)",
-						}}
-					>
-						<Zap className="w-3 h-3 text-white" strokeWidth={2.5} />
-					</div>
-					<span
-						className="text-sm font-bold tracking-tight"
-						style={{ color: themeColors.text }}
-					>
-						orbit
-					</span>
-				</div>
+			<div className="flex items-center gap-2">
 
-				<div
-					className="h-5 w-px opacity-50"
-					style={{ background: themeColors.border }}
-				/>
-
-				<button
-					type="button"
-					onClick={onRun}
-					disabled={isRunning}
-					className="flex items-center gap-1.5 h-7 px-3 text-xs font-semibold rounded-md transition-all duration-200 disabled:opacity-60 cursor-pointer"
-					style={{
-						background: isRunning
-							? themeColors.bgTertiary
-							: "linear-gradient(135deg, #00c6fb 0%, #005bea 100%)",
-						color: isRunning ? themeColors.textMuted : "white",
-						boxShadow: isRunning
-							? "none"
-							: "0 1px 8px rgba(0, 91, 234, 0.35), inset 0 1px 0 rgba(255,255,255,0.15)",
-						border: isRunning
-							? `1px solid ${themeColors.border}`
-							: "1px solid transparent",
-					}}
+				<Code className="w-3 h-3" strokeWidth={2} />
+				<span
+					className="text-sm font-medium tracking-tight"
+					style={{ color: themeColors.text }}
 				>
-					{isRunning ? (
-						<Loader2 className="w-3 h-3 orbit-spinner" />
-					) : (
-						<Play className="w-3 h-3" fill="currentColor" />
-					)}
-					{isRunning ? "Running" : "Run"}
-				</button>
+					orbit
+				</span>
+			</div>
 
+			<div className="flex items-center gap-1.5">
 				<KbdGroup
 					className="hidden sm:inline-flex"
 					style={{
@@ -118,12 +78,33 @@ export function Toolbar({
 						<CornerDownLeft className="size-3" />
 					</Kbd>
 				</KbdGroup>
-			</div>
 
-			{/* Right: Controls */}
-			<div className="flex items-center gap-1.5">
+				<button
+					type="button"
+					onClick={onRun}
+					disabled={isRunning}
+					className="flex items-center gap-1.5 h-7 px-2.5 text-[11px] font-medium rounded transition-colors duration-150 disabled:opacity-50 cursor-pointer hover:opacity-80"
+					style={{
+						background: themeColors.bgTertiary,
+						color: themeColors.text,
+						border: `1px solid ${themeColors.border}`,
+					}}
+				>
+					{isRunning ? (
+						<Loader2 className="w-3 h-3 orbit-spinner" />
+					) : (
+						<Play className="w-3 h-3" fill="currentColor" strokeWidth={2} />
+					)}
+					{isRunning ? "Running" : "Run"}
+				</button>
+
 				<div
-					className="flex items-center h-7 rounded-md overflow-hidden"
+					className="h-5 w-px opacity-40"
+					style={{ background: themeColors.border }}
+				/>
+
+				<div
+					className="flex items-center h-7 rounded overflow-hidden"
 					style={{
 						border: `1px solid ${themeColors.border}`,
 						background: themeColors.bgTertiary,
