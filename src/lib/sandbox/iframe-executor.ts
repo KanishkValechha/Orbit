@@ -20,9 +20,10 @@ function createSandboxIframe(): HTMLIFrameElement {
 	return iframe;
 }
 
-function generateConsoleScript(): string {
+function generateConsoleScript(execId: string): string {
 	return `
     (function() {
+      const __execId = "${execId}";
       const __messages = [];
       const originalConsole = {
         log: console.log,
@@ -60,7 +61,8 @@ function generateConsoleScript(): string {
             type,
             args: serializedArgs,
             timestamp: Date.now()
-          }
+          },
+          execId: __execId
         }, '*');
       }
 
@@ -88,7 +90,8 @@ function generateConsoleScript(): string {
             name: error?.name || 'Error',
             message: String(message),
             stack: error?.stack
-          }
+          },
+          execId: __execId
         }, '*');
       };
     })();
@@ -102,6 +105,7 @@ export async function executeInIframe(
 	return new Promise((resolve) => {
 		const startTime = performance.now();
 		const messages: ConsoleMessage[] = [];
+		const execId = crypto.randomUUID();
 		let resolved = false;
 
 		const timeout = setTimeout(() => {
@@ -117,6 +121,8 @@ export async function executeInIframe(
 		}, 30000);
 
 		function handleMessage(event: MessageEvent) {
+			if (event.data?.execId !== execId) return;
+
 			if (event.data?.type === "console") {
 				const msg: ConsoleMessage = {
 					id: crypto.randomUUID(),
@@ -127,15 +133,13 @@ export async function executeInIframe(
 			} else if (event.data?.type === "result") {
 				if (!resolved) {
 					resolved = true;
-					setTimeout(() => {
-						cleanup();
-						resolve({
-							success: true,
-							result: event.data.payload,
-							executionTime: performance.now() - startTime,
-							console: messages,
-						});
-					}, 100);
+					cleanup();
+					resolve({
+						success: true,
+						result: event.data.payload,
+						executionTime: performance.now() - startTime,
+						console: messages,
+					});
 				}
 			} else if (event.data?.type === "error") {
 				if (!resolved) {
@@ -164,30 +168,70 @@ export async function executeInIframe(
       <!DOCTYPE html>
       <html>
         <head>
-          <script>${generateConsoleScript()}</script>
+          <script>${generateConsoleScript(execId)}</script>
         </head>
         <body>
           <script>
-            (async function() {
-              try {
-                await (async function() {
-                  ${code}
-                })();
-                await new Promise(r => setTimeout(r, 5000));
-                window.parent.postMessage({
-                  type: 'result',
-                  payload: undefined
-                }, '*');
-              } catch (__e) {
-                window.parent.postMessage({
-                  type: 'error',
-                  payload: {
+            (function() {
+              const __execId = "${execId}";
+              const __OriginalPromise = Promise;
+              const __originalThen = __OriginalPromise.prototype.then;
+              const __pending = { count: 0 };
+              
+              function __trackPromise(promise) {
+                if (promise && typeof promise.then === 'function') {
+                  __pending.count++;
+                  __originalThen.call(promise,
+                    () => __pending.count--,
+                    () => __pending.count--
+                  );
+                }
+                return promise;
+              }
+              
+              Promise = function(executor) {
+                return __trackPromise(new __OriginalPromise(executor));
+              };
+              Promise.resolve = (v) => __trackPromise(__OriginalPromise.resolve(v));
+              Promise.reject = (v) => __trackPromise(__OriginalPromise.reject(v));
+              Promise.all = (arr) => __trackPromise(__OriginalPromise.all(arr));
+              Promise.race = (arr) => __trackPromise(__OriginalPromise.race(arr));
+              Promise.allSettled = (arr) => __trackPromise(__OriginalPromise.allSettled(arr));
+              Promise.any = (arr) => __trackPromise(__OriginalPromise.any(arr));
+              Promise.prototype = __OriginalPromise.prototype;
+              
+              __OriginalPromise.prototype.then = function(onFulfilled, onRejected) {
+                return __trackPromise(__originalThen.call(this, onFulfilled, onRejected));
+              };
+              
+              async function __drain() {
+                while (__pending.count > 0) {
+                  await new __OriginalPromise(r => setTimeout(r, 10));
+                }
+              }
+              
+              function __send(type, payload) {
+                window.parent.postMessage({ type, payload, execId: __execId }, '*');
+              }
+              
+              (async function() {
+                try {
+                  const __result = (function() {
+                    ${code}
+                  })();
+                  if (__result && typeof __result.then === 'function') {
+                    __trackPromise(__result);
+                  }
+                  await __drain();
+                  __send('result', undefined);
+                } catch (__e) {
+                  __send('error', {
                     name: __e.name,
                     message: __e.message,
                     stack: __e.stack
-                  }
-                }, '*');
-              }
+                  });
+                }
+              })();
             })();
           </script>
         </body>
